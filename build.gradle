@@ -1,0 +1,70 @@
+
+group 'com.incs83'
+version '1.0.0'
+description 'This is the M83 Platfrom'
+buildscript {
+	ext {
+		springBootVersion = '2.1.5.RELEASE'
+		springVersion = '5.1.5.RELEASE'
+		springCloudVersion = 'Greenwich.SR2'
+	}
+	repositories {
+		mavenCentral()
+		maven {
+			url "https://plugins.gradle.org/m2/"
+		}
+	}
+	dependencies {
+		classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.6.0"
+		classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'project-report'
+apply plugin: 'application'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+repositories {
+	mavenCentral()
+}
+dependencies {
+	runtimeOnly 'mysql:mysql-connector-java'
+	implementation 'org.springframework.boot:spring-boot-autoconfigure:2.1.5.RELEASE'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
+		exclude module: 'org.springframework.boot:spring-boot-starter-logging'
+	}
+	implementation 'org.springframework.boot:spring-boot-devtools'
+
+	implementation "org.springframework.boot:spring-boot-starter-log4j2:${springBootVersion}"
+
+	implementation group: 'org.json', name: 'json', version: '20180813'
+
+	implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.2.Final'
+	implementation group: 'org.hibernate', name: 'hibernate-c3p0', version: '5.4.2.Final'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+configurations {
+	all*.exclude module: 'spring-boot-starter-logging'
+	all*.exclude module: 'spring-data-commons'
+}
+
+bootRun {
+	systemProperties System.properties
+}
